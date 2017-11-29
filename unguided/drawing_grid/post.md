@@ -1,5 +1,3 @@
-Eh, "hard" means different things to a lot of people. In this context I felt like I didn't have enough time to do an example of rendering a grid, but mostly I have a tendency to want to tutorialize and that makes it take a long, long time. It's a new day, and now I sort of have time. Let's have a class while I wait on a meeting.
-
 If you want to [i]draw[/i] your grid, you need to be comfortable with a few things. 
 
 First, a crash-course in how you draw things in Windows Forms. When Windows decides it's time to draw, the Paint event is raised for the form and every control on it in some order that's not important for the discussion. So if you want to draw things on a Form or Control, you have to handle the Paint event. This event gives you a PaintEventArgs that has the Graphics object you use to draw, and some properties to help you understand the coordinates you should use to draw. Normally Windows decides when it wants to redraw by itself. If you need to MAKE it redraw, the best way is to call the Invalidate() method. What that does is really interesting, but for this topic you only need to know "that's what makes it redraw".
@@ -20,4 +18,26 @@ We can also draw the border "on" the cell. This means we line up the center of o
 
 We can also draw the border "outside" the cell. This means the border's "inside" pixels are completely outside the 32x32 area. So in this setup, our 32x32 cells are actually 35x35. Just like with the "inside" approach, if we really want 32x32 then we can only draw in a 29x29 space.
 
-This matters because if we're going to draw a grid, and especially if we want to handle clicks, we need to be able to calculate the coordinates for any given grid cell, and we need to have a good feeling for what each one looks like.
+This matters because if we're going to draw a grid, and especially if we want to handle clicks, we need to be able to calculate the coordinates for any given grid cell, and we need to have a good feeling for what each one looks like. I like to use "outside" so the inside of my cells is always the size I want. Here's what that looks like:
+
+![image placeholder](http://placecage.com/300/300)
+
+So for 1 cell, our width and height are really similar. Width is:
+
+    2*border + cellWidth
+
+And Height is:
+
+    2*border + cellHeight
+
+If we stack two cells next to each other, the left border of one shares the space of the right border of the other. So for two cells we have:
+
+    border + cellWidth + border + cellWidth + border = 2*border + 2*cellWidth + border
+    border + cellHeight + border + cellHeight + border = 2*border + 2*cellHeight + border
+
+If we move up to 3, we figure out the width/height of a grid with *n* cells via:
+
+    (2 + n-1)*border + n*cellWidth  
+    (2 + n-1)*border + n*cellHeight  
+
+
